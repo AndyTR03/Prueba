@@ -16,7 +16,7 @@
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="css/_all-skins.min.css">
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-    <link rel="shortcut icon" href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/87067b01-3059-471d-9c2a-5f17f11d1125/DallEGeneratedImages/dalle-c27728b2-83e5-4c3d-9135-9b4e783b8e810251676029293657226200.jpg&dcHint=BrazilSouth&fileToken=fdfc6904-7839-4f45-b5e5-ccbf1ad9648f">
+    <link rel="shortcut icon" href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/6b12cf8c-c3a8-4a4c-bd56-3da34d95af60/DallEGeneratedImages/dalle-09b5dabd-7dd3-40c2-b3b2-a499caf774060251675924350670259700.jpg&dcHint=BrazilSouth&fileToken=63259f58-39db-43a7-be43-04b2b5476da4">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/usuarios.js') }}"></script>
@@ -28,7 +28,7 @@
       <header class="main-header">
 
         <!-- Logo -->
-        <a href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/87067b01-3059-471d-9c2a-5f17f11d1125/DallEGeneratedImages/dalle-c27728b2-83e5-4c3d-9135-9b4e783b8e810251676029293657226200.jpg&dcHint=BrazilSouth&fileToken=fdfc6904-7839-4f45-b5e5-ccbf1ad9648f" class="logo">
+        <a href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/6b12cf8c-c3a8-4a4c-bd56-3da34d95af60/DallEGeneratedImages/dalle-09b5dabd-7dd3-40c2-b3b2-a499caf774060251675924350670259700.jpg&dcHint=BrazilSouth&fileToken=63259f58-39db-43a7-be43-04b2b5476da4" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini"><b>ANDY</b></span>
           <!-- logo for regular state and mobile devices -->
