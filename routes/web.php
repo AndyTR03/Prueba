@@ -13,10 +13,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/alertas', [AlertaController::class, 'index']);
-Route::get('/alertas_departamento', [AlertaDepartamentoController::class, 'index']);
-Route::get('/alertas_usuario', [AlertaUsuarioController::class, 'index']);
-Route::get('/departamentos', [DepartamentoController::class, 'index']);
-Route::get('/logins', [LoginController::class, 'index']);
-Route::get('/usuarios', [UsuarioController::class, 'index']);
-Route::get('/usuarios_departamento', [UsuarioDepartamentoController::class, 'index']);
+Route::resource('alertas', AlertaController::class);
+Route::resource('alertas_departamento', AlertaDepartamentoController::class);
+Route::resource('alertas_usuario', AlertaUsuarioController::class);
+Route::resource('departamentos', DepartamentoController::class);
+Route::resource('logins', LoginController::class);
+Route::resource('usuarios', UsuarioController::class);
+Route::resource('usuarios_departamento', UsuarioDepartamentoController::class);

@@ -16,8 +16,11 @@
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="css/_all-skins.min.css">
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-    <link rel="shortcut icon" href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/f57dd790-7e63-473f-b712-4dc4ce5442d1/DallEGeneratedImages/dalle-56dfa5a6-4c3a-4c14-816e-168b2425b56b0251676053576827112700.jpg&dcHint=BrazilSouth&fileToken=170176a7-3357-4a8d-b8f5-911379835cb4">
+    <link rel="shortcut icon" href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/87067b01-3059-471d-9c2a-5f17f11d1125/DallEGeneratedImages/dalle-c27728b2-83e5-4c3d-9135-9b4e783b8e810251676029293657226200.jpg&dcHint=BrazilSouth&fileToken=fdfc6904-7839-4f45-b5e5-ccbf1ad9648f">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('js/usuarios.js') }}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
   </head>
   <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
@@ -25,7 +28,7 @@
       <header class="main-header">
 
         <!-- Logo -->
-        <a href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/f57dd790-7e63-473f-b712-4dc4ce5442d1/DallEGeneratedImages/dalle-56dfa5a6-4c3a-4c14-816e-168b2425b56b0251676053576827112700.jpg&dcHint=BrazilSouth&fileToken=170176a7-3357-4a8d-b8f5-911379835cb4" class="logo">
+        <a href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/87067b01-3059-471d-9c2a-5f17f11d1125/DallEGeneratedImages/dalle-c27728b2-83e5-4c3d-9135-9b4e783b8e810251676029293657226200.jpg&dcHint=BrazilSouth&fileToken=fdfc6904-7839-4f45-b5e5-ccbf1ad9648f" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini"><b>ANDY</b></span>
           <!-- logo for regular state and mobile devices -->
@@ -97,7 +100,7 @@
                 <li><a href="alertas_usuario"><i class="fa fa-circle-o"></i> Alerta-Usuario</a></li>
                 <li><a href="departamentos"><i class="fa fa-circle-o"></i> Departamento</a></li>
                 <li><a href="logins"><i class="fa fa-circle-o"></i> Login</a></li>
-                <li><a href="usuarios"><i class="fa fa-circle-o"></i> Uusuario</a></li>
+                <li><a href="usuarios"><i class="fa fa-circle-o"></i> Usuario</a></li>
                 <li><a href="usuarios_departamento"><i class="fa fa-circle-o"></i> Usuario-Departamento</a></li>
               </ul>
             </li>
