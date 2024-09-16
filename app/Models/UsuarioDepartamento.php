@@ -17,4 +17,15 @@ class UsuarioDepartamento extends Model
     ];
 
     public $timestamps = false; // Desactivar timestamps si no se usan
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id'); // Asegúrate de que el nombre del campo es correcto
+    }
+
+    public function departamento()
+    {
+        return $this->belongsTo(Departamento::class, 'departamento_id'); // Asegúrate de que el nombre del campo es correcto
+    }
 }
+

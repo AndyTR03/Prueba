@@ -16,4 +16,9 @@ class Departamento extends Model
     ];
 
     public $timestamps = false; // Desactivar timestamps si no se usan
+
+    public function usuarioDepartamentos()
+    {
+        return $this->hasMany(UsuarioDepartamento::class);
+    }
 }

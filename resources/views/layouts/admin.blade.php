@@ -19,7 +19,6 @@
     <link rel="shortcut icon" href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/6b12cf8c-c3a8-4a4c-bd56-3da34d95af60/DallEGeneratedImages/dalle-09b5dabd-7dd3-40c2-b3b2-a499caf774060251675924350670259700.jpg&dcHint=BrazilSouth&fileToken=63259f58-39db-43a7-be43-04b2b5476da4">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ asset('js/usuarios.js') }}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
   </head>
   <body class="hold-transition skin-blue sidebar-mini">

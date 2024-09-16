@@ -20,5 +20,6 @@ class UsuarioRequest extends FormRequest
             'telefono' => 'required|string|max:15',
         ];
     }
+    
 }
 
