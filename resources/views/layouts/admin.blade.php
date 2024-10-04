@@ -16,7 +16,7 @@
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="css/_all-skins.min.css">
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-    <link rel="shortcut icon" href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/6b12cf8c-c3a8-4a4c-bd56-3da34d95af60/DallEGeneratedImages/dalle-09b5dabd-7dd3-40c2-b3b2-a499caf774060251675924350670259700.jpg&dcHint=BrazilSouth&fileToken=63259f58-39db-43a7-be43-04b2b5476da4">
+    <link rel="shortcut icon" href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/fce5d6f4-aa8e-41c9-8238-346561005426/UserAssets/Thumbnails/0251674942078296140100.jpg&dcHint=BrazilSouth&fileToken=791396c3-b9ef-4b9b-93b7-8833c7380f04">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -27,7 +27,7 @@
       <header class="main-header">
 
         <!-- Logo -->
-        <a href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/6b12cf8c-c3a8-4a4c-bd56-3da34d95af60/DallEGeneratedImages/dalle-09b5dabd-7dd3-40c2-b3b2-a499caf774060251675924350670259700.jpg&dcHint=BrazilSouth&fileToken=63259f58-39db-43a7-be43-04b2b5476da4" class="logo">
+        <a href="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/fce5d6f4-aa8e-41c9-8238-346561005426/UserAssets/Thumbnails/0251674942078296140100.jpg&dcHint=BrazilSouth&fileToken=791396c3-b9ef-4b9b-93b7-8833c7380f04" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini"><b>ANDY</b></span>
           <!-- logo for regular state and mobile devices -->
@@ -103,7 +103,7 @@
                 <li><a href="usuarios_departamento"><i class="fa fa-circle-o"></i> Usuario-Departamento</a></li>
               </ul>
             </li>
-            
+            <!--
             <li class="treeview">
               <a href="#">
                 <i class="fa fa-th"></i>
@@ -149,7 +149,7 @@
                 <small class="label pull-right bg-yellow">IT</small>
               </a>
             </li>
-                        
+-->       
           </ul>
         </section>
         <!-- /.sidebar -->

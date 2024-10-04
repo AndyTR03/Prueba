@@ -12,6 +12,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <!-- Contenedor para mensajes de error -->
+                    <div class="alert alert-danger" style="display:none;"></div> <!-- Este es el nuevo contenedor -->
+                    
                     <div class="form-group">
                         <label for="usuario_id">Usuario</label>
                         <select name="usuario_id" class="form-control" required>

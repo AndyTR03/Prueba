@@ -1,4 +1,4 @@
-<!-- Modal de Confirmación para Eliminar Alerta -->
+<!-- Modal de Confirmación de Eliminación -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -9,11 +9,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que quieres eliminar esta alerta?
+                ¿Está seguro de que desea eliminar esta alerta?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+                <button type="button" id="confirmDeleteButton" class="btn btn-danger">Eliminar</button>
             </div>
         </div>
     </div>

@@ -17,4 +17,14 @@ class AlertaDepartamento extends Model
     ];
 
     public $timestamps = false; // Desactivar timestamps si no se usan
+
+    public function Alerta()
+    {
+        return $this->belongsTo(Alerta::class, 'alerta_id'); 
+    }
+
+    public function Departamento()
+    {
+        return $this->belongsTo(Departamento::class, 'departamento_id');
+    }
 }

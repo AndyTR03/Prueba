@@ -2,19 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Alerta extends Model
 {
-    use HasFactory;
+    protected $table = 'alertas';  // Opcional, ya que sigue la convención de nombre
+    protected $fillable = ['mensaje', 'fecha_creacion'];
 
-    protected $table = 'alertas';
+    // Desactivar timestamps automáticos
+    public $timestamps = false;
+    // Relación muchos a muchos con Departamentos a través de AlertaDepartamento
+    
+    public function usuarios()
+    {
+        return $this->belongsToMany(Usuario::class, 'alerta_usuarios');
+    }
 
-    protected $fillable = [
-        'mensaje',
-        'fecha_creacion',
-    ];
+    public function departamentos()
+    {
+        return $this->belongsToMany(Departamento::class, 'alerta_departamentos');
+    }
 
-    public $timestamps = false; // Desactivar timestamps si no se usan
 }

@@ -14,43 +14,35 @@ $(document).ready(function() {
 
     // Evento para manejar el formulario de creación de usuario
     $('.create-usuario-departamento-form').on('submit', function(e) {
-        e.preventDefault(); // Evita la recarga de la página
-
-        let formData = $(this).serialize(); // Obtén los datos del formulario
+        e.preventDefault();
+    
+        let formData = $(this).serialize();
         let form = $(this);
-        let actionUrl = form.attr('action'); // La URL para crear usuario
-        let modalId = form.closest('.modal').attr('id'); // El ID del modal
-
-        // Limpia y oculta mensajes de error y éxito al intentar enviar el formulario
-        $('#' + modalId + ' .alert-danger').hide(); // Oculta el mensaje de error
-        $('#success-message').hide(); // Oculta el mensaje de éxito si existe
-
+        let actionUrl = form.attr('action');
+        let modalId = form.closest('.modal').attr('id');
+    
         $.ajax({
             url: actionUrl,
             method: 'POST',
             data: formData,
             success: function(response) {
-                // Si la creación fue exitosa, oculta el modal y muestra el mensaje de éxito
                 $('#' + modalId).modal('hide');
-                updateUsuarioDepartamentoTable(response.data); // Actualiza la tabla con la respuesta
-                $('#success-message').html('UsuarioDepartamento creado exitosamente').show(); // Muestra el mensaje de éxito
-                
-                // Limpia el formulario después de un envío exitoso
-                form[0].reset(); // Limpia el formulario
+                updateUsuarioDepartamentoTable(response.data);
+                $('#success-message').html('UsuarioDepartamento creado exitosamente').show();
+                form[0].reset();
             },
             error: function(xhr) {
-                // Comprueba si la respuesta contiene errores
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    let errors = xhr.responseJSON.errors;
-                    showErrorMessages(errors, modalId); // Muestra los errores
+                if (xhr.status === 400 && xhr.responseJSON.message) {
+                    // Manejar el caso donde el usuario ya está en el departamento
+                    $('#' + modalId + ' .alert-danger').html('<ul><li>' + xhr.responseJSON.message + '</li></ul>').show();
                 } else {
-                    // En caso de otros tipos de errores
                     $('#' + modalId + ' .alert-danger').html('<ul><li>Error desconocido. Intente de nuevo.</li></ul>').show();
                 }
-                $('#success-message').hide(); // Oculta el mensaje de éxito si existe
+                $('#success-message').hide();
             }
         });
     });
+    
 
     // Evento para limpiar el modal al abrirlo
     $('.modal').on('show.bs.modal', function() {
@@ -91,43 +83,40 @@ $(document).ready(function() {
 
     // Evento para manejar el formulario de actualización de usuario
     $('.update-usuario-departamento-form').on('submit', function(e) {
-        e.preventDefault(); // Evita la recarga de la página
-
-        let formData = $(this).serialize(); // Obtén los datos del formulario
+        e.preventDefault();
+        
+        let formData = $(this).serialize();
         let form = $(this);
-        let modalId = form.closest('.modal').attr('id'); // El ID del modal
-
-        // Limpia y oculta mensajes de error y éxito al intentar enviar el formulario
-        $('#' + modalId + ' .alert-danger').hide(); // Oculta el mensaje de error
-        $('#success-message').hide(); // Oculta el mensaje de éxito si existe
-
+        let actionUrl = form.attr('action');
+        let modalId = form.closest('.modal').attr('id');
+        
         $.ajax({
-            url: form.attr('action'), // URL para actualizar el usuario
-            method: 'PUT', // Método debe ser 'PUT'
-            data: formData, // Los datos del formulario
+            url: actionUrl,
+            method: 'PUT',
+            data: formData,
             success: function(response) {
-                // Si la actualización fue exitosa, oculta el modal y muestra el mensaje de éxito
+                // Si la actualización fue exitosa, oculta el modal y actualiza la tabla
                 $('#' + modalId).modal('hide');
-                updateUsuarioDepartamentoTable(response.data); // Actualiza la tabla con la respuesta
-                $('#success-message').html('UsuarioDepartamento actualizado exitosamente').show(); // Muestra el mensaje de éxito
-                
-                // Limpia el formulario después de un envío exitoso
-                form[0].reset(); // Limpia el formulario
-                $('#' + modalId + ' .alert-danger').hide(); // Oculta mensajes de error si están visibles
+                updateUsuarioDepartamentoTable(response.data);
+                $('#success-message').html('UsuarioDepartamento actualizado exitosamente').show();
+                form[0].reset();
             },
             error: function(xhr) {
-                // Comprueba si la respuesta contiene errores
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    let errors = xhr.responseJSON.errors;
-                    showErrorMessages(errors, modalId); // Muestra los errores
+                if (xhr.status === 400 && xhr.responseJSON.message) {
+                    // Manejar el caso donde no se puede cambiar de departamento
+                    $('#' + modalId + ' .alert-danger').html('<ul><li>' + xhr.responseJSON.message + '</li></ul>').show();
+                } else if (xhr.status === 500 && xhr.responseJSON.message) {
+                    // Manejar otros errores del servidor
+                    $('#' + modalId + ' .alert-danger').html('<ul><li>' + xhr.responseJSON.message + '</li></ul>').show();
                 } else {
-                    // En caso de otros tipos de errores
                     $('#' + modalId + ' .alert-danger').html('<ul><li>Error desconocido. Intente de nuevo.</li></ul>').show();
                 }
-                $('#success-message').hide(); // Oculta el mensaje de éxito si existe
+                $('#success-message').hide();
             }
         });
     });
+
+    
 
     function updateUsuarioDepartamentoTable(data) {
         let row = $('tr[data-id="' + data.id + '"]');

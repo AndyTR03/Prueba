@@ -20,8 +20,23 @@ class Usuario extends Model
 
     public $timestamps = false; // Desactivar timestamps si no se usan
 
-    public function usuarioDepartamentos()
+    public function alertasUsuario()
     {
-        return $this->hasMany(UsuarioDepartamento::class);
+        return $this->hasMany(AlertaUsuario::class, 'usuario_id');
+    }
+
+    public function login()
+    {
+        return $this->hasOne(Login::class, 'usuario_id');
+    }
+
+    public function usuarioDepartamento()
+    {
+        return $this->hasMany(UsuarioDepartamento::class, 'usuario_id');
+    }
+    
+    public function Alerta()
+    {
+        return $this->hasMany(AlertaUsuario::class, 'usuario_id');
     }
 }

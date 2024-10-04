@@ -44,9 +44,12 @@ class UsuarioController extends Controller
     // Método para eliminar un usuario
     public function destroy($id)
     {
-        $usuario = Usuario::findOrFail($id);
-        $usuario->delete();
-        
-        return response()->json(['id' => $id]);
+
+            $usuario = Usuario::findOrFail($id);
+            
+            // Ahora eliminar el usuario
+            $usuario->delete();
     }
+
+    
 }

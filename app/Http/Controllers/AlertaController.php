@@ -2,58 +2,167 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Alerta;
-use App\Http\Requests\AlertasRequest;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\NumberParseException;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use App\Models\Alerta;
+use App\Models\AlertaDepartamento;
+use App\Models\AlertaUsuario;
+use App\Models\Usuario;
+use App\Models\Departamento;
+use App\Models\UsuarioDepartamento;
 
 class AlertaController extends Controller
 {
-
-   // Método para mostrar la lista de alertas en la tabla login con búsqueda
+    
     public function index(Request $request)
     {
-        $search = $request->get('search');
-        $alertas = Alerta::when($search, function ($query) use ($search) {
-            return $query->where('id', 'LIKE', "%$search%")
-                         ->orwhere('mensaje', 'LIKE', "%$search%")
-                         ->orwhere('fecha_creacion', 'LIKE', "%$search%");
-        })->get();
+        $search = $request->input('search');
+        // Cambia get() por paginate(10) para paginar los resultados
+        $alertas = Alerta::where('mensaje', 'LIKE', "%$search%")->paginate(10); // Cambia 10 por el número de resultados por página que desees
+        
+        $usuarios = Usuario::all();
+        $departamentos = Departamento::all();
+    
+        return view('alertas.index', compact('alertas', 'usuarios', 'departamentos'));
+    }
 
-        // Comprobar si la solicitud es AJAX
-        if ($request->ajax()) {
-            return response()->json(['data' => $alertas]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'mensaje' => 'required|string|max:255',
+            'destinatario_tipo' => 'required|in:usuario,departamento',
+            'usuarios' => 'required_if:destinatario_tipo,usuario|array',
+            'departamentos' => 'required_if:destinatario_tipo,departamento|array',
+        ]);
+
+        // Crear la alerta en la base de datos
+        $alerta = Alerta::create([
+            'mensaje' => $request->input('mensaje'),
+            'fecha_creacion' => now(),
+        ]);
+
+        // Inicializa el array para los resultados de envío
+        $resultadosEnvio = [];
+
+        // Lógica para enviar mensajes
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        $defaultRegion = 'PE'; // Cambia esto por tu país predeterminado
+        $token = "8655aoLGyAXLt1EcaETHHOf2Rk1Ifj"; // Tu token
+        $url = "https://andy.senati.buho.xyz/api/message/send-text"; // URL de la API
+
+        // Obtener los números de teléfono según el tipo de destinatario
+        if ($request->input('destinatario_tipo') === 'usuario') {
+            $usuarios = $request->input('usuarios');
+            foreach ($usuarios as $usuarioId) {
+                $usuario = Usuario::find($usuarioId);
+                if ($usuario) {
+                    $telefono = $usuario->telefono;
+                    $resultadoEnvio = $this->enviarMensaje($telefono, $alerta->mensaje, $phoneUtil, $defaultRegion, $token, $url);
+                    $resultadosEnvio[] = ['telefono' => $telefono, 'resultado' => $resultadoEnvio];
+                }
+            }
+        } elseif ($request->input('destinatario_tipo') === 'departamento') {
+            $departamentos = $request->input('departamentos');
+            foreach ($departamentos as $departamentoId) {
+                $usuariosDelDepartamento = UsuarioDepartamento::where('departamento_id', $departamentoId)->pluck('usuario_id');
+                foreach ($usuariosDelDepartamento as $usuarioId) {
+                    $usuario = Usuario::find($usuarioId);
+                    if ($usuario) {
+                        $telefono = $usuario->telefono;
+                        $resultadoEnvio = $this->enviarMensaje($telefono, $alerta->mensaje, $phoneUtil, $defaultRegion, $token, $url);
+                        $resultadosEnvio[] = ['telefono' => $telefono, 'resultado' => $resultadoEnvio];
+                    }
+                }
+            }
         }
 
-        return view('alertas.index', compact('alertas', 'search'));
+        return response()->json([
+            'id' => $alerta->id,
+            'mensaje' => $alerta->mensaje,
+            'fecha_creacion' => $alerta->fecha_creacion->format('Y-m-d H:i:s'),
+            'resultadosEnvio' => $resultadosEnvio,
+        ]);
     }
 
-    // Método para crear un nuevo registro en la tabla login
-    public function store(AlertasRequest $request)
+    private function enviarMensaje($telefono, $mensaje, $phoneUtil, $defaultRegion, $token, $url)
     {
-        // Crea la alerta usando el request ya modificado
-        $alerta = Alerta::create($request->validated());
+        $formattedNumber = '';
 
-        return response()->json(['data' => $alerta], 201);
+        try {
+            // Si el número no comienza con un prefijo internacional, añadir el código de país
+            if (!preg_match('/^\+?\d+$/', $telefono)) {
+                $telefono = '+51' . $telefono; // Cambia esto por el código de país que corresponda
+            }
+
+            // Intenta analizar el número ingresado
+            $phoneNumber = $phoneUtil->parse($telefono, $defaultRegion);
+
+            // Validar si el número es posible
+            if (!$phoneUtil->isValidNumber($phoneNumber)) {
+                return ['error' => 'Número no válido'];
+            }
+
+            // Formatear el número a formato internacional
+            $formattedNumber = $phoneUtil->format($phoneNumber, \libphonenumber\PhoneNumberFormat::E164);
+
+            // Enviar la solicitud a la API
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer $token",
+                'Content-Type' => 'application/json'
+            ])->post($url, [
+                'number' => $formattedNumber,
+                'message' => $mensaje,
+            ]);
+
+            if ($response->successful()) {
+                return ['success' => true];
+            } else {
+                return ['error' => 'Error en la API: ' . $response->body()];
+            }
+        } catch (NumberParseException $e) {
+            return ['error' => 'Error al analizar el número: ' . $e->getMessage()];
+        }
     }
 
+    
 
-
-    // Método para actualizar un registro en la tabla login
-    public function update(AlertasRequest $request, $id)
+    public function update(Request $request, $id)
     {
+        $request->validate([
+            'mensaje' => 'required|string|max:255',
+        ]);
+
         $alerta = Alerta::findOrFail($id);
-        $alerta->update($request->validated());
-        return response()->json(['data' => $alerta]);
+        $alerta->mensaje = $request->mensaje;
+        $alerta->save();
+
+        return response()->json([
+            'id' => $alerta->id,
+            'mensaje' => $alerta->mensaje,
+            'fecha_creacion' => $alerta->fecha_creacion
+        ]);
     }
 
-    // Método para eliminar un registro en la tabla login
+
+    
     public function destroy($id)
     {
-        $alerta = Alerta::findOrFail($id); // Encuentra la alerta por ID
-        $alerta->delete(); // Elimina la alerta
+        // Buscar la alerta
+        $alerta = Alerta::findOrFail($id);
     
-        return response()->json(['id' => $id]); // Retorna una respuesta JSON
-    }
+        // Eliminar las relaciones con usuarios
+        AlertaUsuario::where('alerta_id', $id)->delete();
+    
+        // Eliminar las relaciones con departamentos
+        AlertaDepartamento::where('alerta_id', $id)->delete();
+    
+        // Finalmente, eliminar la alerta
+        $alerta->delete();
+    
+        return response()->json(['id' => $id]);
+    } 
+
     
 }
-

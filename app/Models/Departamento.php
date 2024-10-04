@@ -21,4 +21,9 @@ class Departamento extends Model
     {
         return $this->hasMany(UsuarioDepartamento::class);
     }
+
+    public function Alerta()
+    {
+        return $this->hasMany(AlertaDepartamento::class, 'departamento_id');
+    }
 }

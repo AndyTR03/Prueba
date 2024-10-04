@@ -17,4 +17,14 @@ class AlertaUsuario extends Model
     ];
 
     public $timestamps = false; // Desactivar timestamps si no se usan
+
+    public function Alerta()
+    {
+        return $this->belongsTo(Alerta::class, 'alerta_id'); 
+    }
+    
+    public function Usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
 }
