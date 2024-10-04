@@ -54,6 +54,13 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <!-- Nuevo campo para seleccionar la fecha de envío -->
+                    <div class="form-group">
+                        <label for="fecha_creacion">Fecha de Envío</label>
+                        <input type="datetime-local" name="fecha_creacion" class="form-control" id="fecha_creacion">
+                        <small class="form-text text-muted">Deja este campo en blanco para enviar el mensaje ahora.</small>
+                    </div>
                     
                     <div class="alert alert-danger" style="display:none;"></div>
                     <div id="success-message" class="alert alert-success" style="display:none;"></div>
@@ -80,6 +87,12 @@
                 $('#usuariosContainer, #departamentosContainer').hide();
             }
         });
+
+        // Opcional: Establecer la fecha y hora actual como valor predeterminado
+        const now = new Date();
+        const timezoneOffset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - timezoneOffset)).toISOString().slice(0, -1);
+        $('#fecha_creacion').val(localISOTime.substring(0, 16)); // Formato YYYY-MM-DDTHH:MM para datetime-local
     });
 
     // Función para alternar la selección de checkboxes

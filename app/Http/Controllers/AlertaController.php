@@ -12,6 +12,8 @@ use App\Models\AlertaUsuario;
 use App\Models\Usuario;
 use App\Models\Departamento;
 use App\Models\UsuarioDepartamento;
+use App\Jobs\EnviarMensajeJob;
+use Carbon\Carbon;
 
 class AlertaController extends Controller
 {
@@ -35,12 +37,16 @@ class AlertaController extends Controller
             'destinatario_tipo' => 'required|in:usuario,departamento',
             'usuarios' => 'required_if:destinatario_tipo,usuario|array',
             'departamentos' => 'required_if:destinatario_tipo,departamento|array',
+            'fecha_creacion' => 'nullable|date',
         ]);
+
+        // Si no se proporciona fecha_creacion, usar la fecha y hora actual
+        $fechaCreacion = $request->input('fecha_creacion') ? Carbon::parse($request->input('fecha_creacion')) : now();
 
         // Crear la alerta en la base de datos
         $alerta = Alerta::create([
             'mensaje' => $request->input('mensaje'),
-            'fecha_creacion' => now(),
+            'fecha_creacion' => $fechaCreacion,
         ]);
 
         // Inicializa el array para los resultados de envío
@@ -59,8 +65,8 @@ class AlertaController extends Controller
                 $usuario = Usuario::find($usuarioId);
                 if ($usuario) {
                     $telefono = $usuario->telefono;
-                    $resultadoEnvio = $this->enviarMensaje($telefono, $alerta->mensaje, $phoneUtil, $defaultRegion, $token, $url);
-                    $resultadosEnvio[] = ['telefono' => $telefono, 'resultado' => $resultadoEnvio];
+                    $this->programarEnvio($telefono, $alerta->mensaje, $fechaCreacion, $phoneUtil, $defaultRegion, $token, $url);
+                    $resultadosEnvio[] = ['telefono' => $telefono, 'estado' => 'Programado'];
                 }
             }
         } elseif ($request->input('destinatario_tipo') === 'departamento') {
@@ -71,8 +77,8 @@ class AlertaController extends Controller
                     $usuario = Usuario::find($usuarioId);
                     if ($usuario) {
                         $telefono = $usuario->telefono;
-                        $resultadoEnvio = $this->enviarMensaje($telefono, $alerta->mensaje, $phoneUtil, $defaultRegion, $token, $url);
-                        $resultadosEnvio[] = ['telefono' => $telefono, 'resultado' => $resultadoEnvio];
+                        $this->programarEnvio($telefono, $alerta->mensaje, $fechaCreacion, $phoneUtil, $defaultRegion, $token, $url);
+                        $resultadosEnvio[] = ['telefono' => $telefono, 'estado' => 'Programado'];
                     }
                 }
             }
@@ -85,6 +91,20 @@ class AlertaController extends Controller
             'resultadosEnvio' => $resultadosEnvio,
         ]);
     }
+
+    private function programarEnvio($telefono, $mensaje, $fechaCreacion, $phoneUtil, $defaultRegion, $token, $url)
+    {
+        // Si la fecha es futura, programar el Job para esa fecha
+        if ($fechaCreacion->isFuture()) {
+            EnviarMensajeJob::dispatch($telefono, $mensaje, $token, $url, $defaultRegion)
+                ->delay($fechaCreacion);
+        } else {
+            // Si la fecha es pasada o actual, enviar el mensaje inmediatamente
+            $this->enviarMensaje($telefono, $mensaje, $phoneUtil, $defaultRegion, $token, $url);
+        }
+    }
+
+    
 
     private function enviarMensaje($telefono, $mensaje, $phoneUtil, $defaultRegion, $token, $url)
     {
