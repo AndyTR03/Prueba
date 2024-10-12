@@ -15,10 +15,13 @@ $(document).ready(function() {
     // Evento para manejar el formulario de creación de alerta
     $('.create-alert-form').on('submit', function(e) {
         e.preventDefault();
-        let formData = $(this).serialize();
-        let form = $(this);
-        let actionUrl = form.attr('action');
-        let modalId = form.closest('.modal').attr('id');
+
+        // Crear un FormData para manejar tanto archivos como datos de texto
+        let form = $(this)[0]; // Obtener el formulario como un elemento DOM
+        let formData = new FormData(form); // Crear un FormData con el formulario completo
+
+        let actionUrl = $(this).attr('action');
+        let modalId = $(this).closest('.modal').attr('id');
 
         // Limpia y oculta mensajes de error y éxito
         $('#' + modalId + ' .alert-danger').hide();
@@ -28,12 +31,14 @@ $(document).ready(function() {
             url: actionUrl,
             method: 'POST',
             data: formData,
+            processData: false, // Impedir que jQuery procese los datos
+            contentType: false, // Impedir que jQuery establezca el tipo de contenido (dejar que el navegador lo haga)
             success: function(response) {
                 $('#' + modalId).modal('hide');
-            
+
                 // Actualizar la tabla con los nuevos datos
                 updateAlertTable(response); // Actualiza la tabla
-            
+
                 // Verificar si la respuesta tiene información sobre los envíos
                 if (response.resultadosEnvio) {
                     let mensaje = 'Alerta creada exitosamente.<br>Envíos: <ul>';
@@ -51,11 +56,11 @@ $(document).ready(function() {
                 } else {
                     $('#success-message').html('Alerta creada exitosamente').show();
                 }
-                
+
                 // Restablecer el formulario a su estado inicial
-                form[0].reset();
+                form.reset();
                 // ... restablecer selectores, ocultar contenedores, etc.
-            },        
+            },
             error: function(xhr) {
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     let errors = xhr.responseJSON.errors;

@@ -14,6 +14,7 @@ use App\Models\Departamento;
 use App\Models\UsuarioDepartamento;
 use App\Jobs\EnviarMensajeJob;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class AlertaController extends Controller
 {
@@ -29,118 +30,166 @@ class AlertaController extends Controller
     
         return view('alertas.index', compact('alertas', 'usuarios', 'departamentos'));
     }
+    
+    private function getApiConfig()
+    {
+        // Leer la configuración actual desde el archivo JSON
+        $config = json_decode(Storage::get('api_config.json'), true);
+
+        // Validar que la configuración sea correcta
+        if (!$config || !isset($config['token']) || !isset($config['url'])) {
+            abort(500, 'Configuración API no válida o no encontrada.');
+        }
+
+        return $config;
+    }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'mensaje' => 'required|string|max:255',
-            'destinatario_tipo' => 'required|in:usuario,departamento',
-            'usuarios' => 'required_if:destinatario_tipo,usuario|array',
-            'departamentos' => 'required_if:destinatario_tipo,departamento|array',
-            'fecha_creacion' => 'nullable|date',
-        ]);
+{
+    $request->validate([
+        'mensaje' => 'required|string|max:255',
+        'destinatario_tipo' => 'required|in:usuario,departamento',
+        'usuarios' => 'required_if:destinatario_tipo,usuario|array',
+        'departamentos' => 'required_if:destinatario_tipo,departamento|array',
+        'fecha_creacion' => 'nullable|date',
+        'archivo' => 'nullable|file|mimes:pdf,jpeg,png,jpg,doc,docx,ppt,pptx|max:10000',
+    ]);
 
-        // Si no se proporciona fecha_creacion, usar la fecha y hora actual
-        $fechaCreacion = $request->input('fecha_creacion') ? Carbon::parse($request->input('fecha_creacion')) : now();
+    $fechaCreacion = $request->input('fecha_creacion')
+        ? Carbon::parse($request->input('fecha_creacion'))->setTimezone('America/Lima') 
+        : Carbon::now('America/Lima');
 
-        // Crear la alerta en la base de datos
-        $alerta = Alerta::create([
-            'mensaje' => $request->input('mensaje'),
-            'fecha_creacion' => $fechaCreacion,
-        ]);
+    $alerta = Alerta::create([
+        'mensaje' => $request->input('mensaje'),
+        'fecha_creacion' => $fechaCreacion,
+    ]);
 
-        // Inicializa el array para los resultados de envío
-        $resultadosEnvio = [];
+    $resultadosEnvio = [];
 
-        // Lógica para enviar mensajes
-        $phoneUtil = PhoneNumberUtil::getInstance();
-        $defaultRegion = 'PE'; // Cambia esto por tu país predeterminado
-        $token = "8655aoLGyAXLt1EcaETHHOf2Rk1Ifj"; // Tu token
-        $url = "https://andy.senati.buho.xyz/api/message/send-text"; // URL de la API
+    $phoneUtil = PhoneNumberUtil::getInstance();
+    $defaultRegion = 'PE'; // Cambia esto por tu país predeterminado
+    $textConfig = json_decode(Storage::get('api_config_text.json'), true);
+    $tokenTexto = $textConfig['token'] ?? 'valor_default_token'; // Token para mensajes de texto
+    $urlTexto = $textConfig['url'] ?? 'valor_default_url'; // URL de la API para mensajes de texto
 
-        // Obtener los números de teléfono según el tipo de destinatario
-        if ($request->input('destinatario_tipo') === 'usuario') {
-            $usuarios = $request->input('usuarios');
-            foreach ($usuarios as $usuarioId) {
-                $usuario = Usuario::find($usuarioId);
-                if ($usuario) {
-                    $telefono = $usuario->telefono;
-                    $this->programarEnvio($telefono, $alerta->mensaje, $fechaCreacion, $phoneUtil, $defaultRegion, $token, $url);
-                    $resultadosEnvio[] = ['telefono' => $telefono, 'estado' => 'Programado'];
-                }
-            }
-        } elseif ($request->input('destinatario_tipo') === 'departamento') {
-            $departamentos = $request->input('departamentos');
-            foreach ($departamentos as $departamentoId) {
-                $usuariosDelDepartamento = UsuarioDepartamento::where('departamento_id', $departamentoId)->pluck('usuario_id');
-                foreach ($usuariosDelDepartamento as $usuarioId) {
-                    $usuario = Usuario::find($usuarioId);
-                    if ($usuario) {
-                        $telefono = $usuario->telefono;
-                        $this->programarEnvio($telefono, $alerta->mensaje, $fechaCreacion, $phoneUtil, $defaultRegion, $token, $url);
-                        $resultadosEnvio[] = ['telefono' => $telefono, 'estado' => 'Programado'];
-                    }
-                }
-            }
-        }
+    // Obtener la configuración de envío de archivos
+    $fileConfig = json_decode(Storage::get('api_config_file.json'), true);
+    $tokenArchivo = $fileConfig['token'] ?? 'valor_default_token_archivo'; // Token fijo para archivos
+    $urlArchivo = $fileConfig['url'] ?? 'valor_default_url_archivo'; // URL fija para archivos
 
-        return response()->json([
-            'id' => $alerta->id,
-            'mensaje' => $alerta->mensaje,
-            'fecha_creacion' => $alerta->fecha_creacion->format('Y-m-d H:i:s'),
-            'resultadosEnvio' => $resultadosEnvio,
-        ]);
+    // Manejo del archivo (si existe)
+    $archivoAdjunto = null;
+    $nombreArchivo = null;
+    if ($request->hasFile('archivo')) {
+        $archivo = $request->file('archivo');
+        $archivoAdjunto = base64_encode(file_get_contents($archivo));
+        $nombreArchivo = $archivo->getClientOriginalName();
     }
 
-    private function programarEnvio($telefono, $mensaje, $fechaCreacion, $phoneUtil, $defaultRegion, $token, $url)
+    // Inicializar el array de usuarios
+    $usuarios = [];
+    if ($request->input('destinatario_tipo') === 'usuario') {
+        $usuarios = $request->input('usuarios');
+    } elseif ($request->input('destinatario_tipo') === 'departamento') {
+        $departamentos = $request->input('departamentos');
+        foreach ($departamentos as $departamentoId) {
+            $usuariosDelDepartamento = UsuarioDepartamento::where('departamento_id', $departamentoId)->pluck('usuario_id');
+            $usuarios = array_merge($usuarios, $usuariosDelDepartamento->toArray());
+            
+            // Guardar la relación en alerta_departamento
+            AlertaDepartamento::create([
+                'alerta_id' => $alerta->id,
+                'departamento_id' => $departamentoId,
+            ]);
+        }
+    }
+
+    // Eliminar duplicados de usuarios
+    $usuarios = array_unique($usuarios);
+
+    // Programar el envío
+    foreach ($usuarios as $usuarioId) {
+        $usuario = Usuario::find($usuarioId);
+        if ($usuario) {
+            $telefono = $usuario->telefono;
+
+            // Aquí se guarda la relación en la tabla alerta_usuarios
+            AlertaUsuario::create([
+                'alerta_id' => $alerta->id,
+                'usuario_id' => $usuarioId,
+            ]);
+
+            $this->programarEnvio($telefono, $alerta->mensaje, $archivoAdjunto, $nombreArchivo, $fechaCreacion, $phoneUtil, $defaultRegion, $tokenTexto, $tokenArchivo, $urlTexto, $urlArchivo);
+            $resultadosEnvio[] = ['telefono' => $telefono, 'estado' => 'Programado'];
+        }
+    }
+
+    return response()->json([
+        'id' => $alerta->id,
+        'mensaje' => $alerta->mensaje,
+        'fecha_creacion' => $alerta->fecha_creacion->format('Y-m-d H:i:s'),
+        'resultadosEnvio' => $resultadosEnvio,
+    ]);
+}
+
+    private function programarEnvio($telefono, $mensaje, $archivoAdjunto, $nombreArchivo, $fechaCreacion, $phoneUtil, $defaultRegion, $tokenTexto, $tokenArchivo, $urlTexto, $urlArchivo)
     {
-        // Si la fecha es futura, programar el Job para esa fecha
         if ($fechaCreacion->isFuture()) {
-            EnviarMensajeJob::dispatch($telefono, $mensaje, $token, $url, $defaultRegion)
+            EnviarMensajeJob::dispatch($telefono, $mensaje, $archivoAdjunto, $nombreArchivo, $tokenTexto, $tokenArchivo, $urlTexto, $urlArchivo, $defaultRegion)
                 ->delay($fechaCreacion);
         } else {
-            // Si la fecha es pasada o actual, enviar el mensaje inmediatamente
-            $this->enviarMensaje($telefono, $mensaje, $phoneUtil, $defaultRegion, $token, $url);
+            $this->enviarMensaje($telefono, $mensaje, $archivoAdjunto, $nombreArchivo, $phoneUtil, $defaultRegion, $tokenTexto, $tokenArchivo, $urlTexto, $urlArchivo);
         }
     }
 
-    
-
-    private function enviarMensaje($telefono, $mensaje, $phoneUtil, $defaultRegion, $token, $url)
+    private function enviarMensaje($telefono, $mensaje, $archivoAdjunto, $nombreArchivo, $phoneUtil, $defaultRegion, $tokenTexto, $tokenArchivo, $urlTexto, $urlArchivo)
     {
         $formattedNumber = '';
 
         try {
-            // Si el número no comienza con un prefijo internacional, añadir el código de país
             if (!preg_match('/^\+?\d+$/', $telefono)) {
-                $telefono = '+51' . $telefono; // Cambia esto por el código de país que corresponda
+                $telefono = '+' . $telefono; 
             }
 
-            // Intenta analizar el número ingresado
             $phoneNumber = $phoneUtil->parse($telefono, $defaultRegion);
 
-            // Validar si el número es posible
             if (!$phoneUtil->isValidNumber($phoneNumber)) {
                 return ['error' => 'Número no válido'];
             }
 
-            // Formatear el número a formato internacional
             $formattedNumber = $phoneUtil->format($phoneNumber, \libphonenumber\PhoneNumberFormat::E164);
 
-            // Enviar la solicitud a la API
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer $token",
-                'Content-Type' => 'application/json'
-            ])->post($url, [
-                'number' => $formattedNumber,
-                'message' => $mensaje,
-            ]);
+            // Enviar archivo si está adjunto
+            if ($archivoAdjunto) {
+                $responseArchivo = Http::withHeaders([
+                    'Authorization' => "Bearer $tokenArchivo",
+                    'Content-Type' => 'application/json',
+                ])->post($urlArchivo, [
+                    'number' => $formattedNumber,
+                    'message' => $mensaje,
+                    'file' => $archivoAdjunto,
+                    'filename' => $nombreArchivo,
+                ]);
 
-            if ($response->successful()) {
-                return ['success' => true];
+                if ($responseArchivo->failed()) {
+                    return ['error' => 'Error en la API de archivo: ' . $responseArchivo->body()];
+                }
             } else {
-                return ['error' => 'Error en la API: ' . $response->body()];
+                // Solo enviar mensaje de texto si no hay archivo adjunto
+                $responseTexto = Http::withHeaders([
+                    'Authorization' => "Bearer $tokenTexto",
+                    'Content-Type' => 'application/json'
+                ])->post($urlTexto, [
+                    'number' => $formattedNumber,
+                    'message' => $mensaje,
+                ]);
+
+                if ($responseTexto->failed()) {
+                    return ['error' => 'Error en la API de texto: ' . $responseTexto->body()];
+                }
             }
+
+            return ['success' => true];
         } catch (NumberParseException $e) {
             return ['error' => 'Error al analizar el número: ' . $e->getMessage()];
         }

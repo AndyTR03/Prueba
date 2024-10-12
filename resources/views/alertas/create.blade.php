@@ -1,6 +1,6 @@
 <!-- Modal para Crear Alerta -->
 <div class="modal fade" id="crearAlertaModal" tabindex="-1" role="dialog" aria-labelledby="crearAlertaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document"> <!-- Aumentamos el tamaño del modal -->
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="crearAlertaModalLabel">Crear Alerta</h5>
@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="create-alert-form" action="{{ route('alertas.store') }}" method="POST">
+                <form class="create-alert-form" action="{{ route('alertas.store') }}" method="POST" enctype="multipart/form-data"> <!-- Agregamos enctype -->
                     @csrf
                     <div class="form-group">
                         <label for="mensaje">Mensaje <span class="text-danger">*</span></label>
@@ -32,9 +32,7 @@
                             @foreach($usuarios as $usuario)
                                 <div class="form-check" onclick="toggleCheckbox(this)">
                                     <input class="form-check-input" type="checkbox" value="{{ $usuario->id }}" name="usuarios[]" style="display: none;">
-                                    <label class="form-check-label">
-                                        {{ $usuario->nombre }}
-                                    </label>
+                                    <label class="form-check-label">{{ $usuario->nombre }}</label>
                                 </div>
                             @endforeach
                         </div>
@@ -47,19 +45,24 @@
                             @foreach($departamentos as $departamento)
                                 <div class="form-check" onclick="toggleCheckbox(this)">
                                     <input class="form-check-input" type="checkbox" value="{{ $departamento->id }}" name="departamentos[]" style="display: none;">
-                                    <label class="form-check-label">
-                                        {{ $departamento->nombre }}
-                                    </label>
+                                    <label class="form-check-label">{{ $departamento->nombre }}</label>
                                 </div>
                             @endforeach
                         </div>
                     </div>
 
-                    <!-- Nuevo campo para seleccionar la fecha de envío -->
+                    <!-- Campo para seleccionar la fecha de envío -->
                     <div class="form-group">
                         <label for="fecha_creacion">Fecha de Envío</label>
                         <input type="datetime-local" name="fecha_creacion" class="form-control" id="fecha_creacion">
                         <small class="form-text text-muted">Deja este campo en blanco para enviar el mensaje ahora.</small>
+                    </div>
+                    
+                    <!-- Campo para cargar archivos -->
+                    <div class="form-group">
+                        <label for="archivo">Cargar Archivo</label>
+                        <input type="file" name="archivo" class="form-control" id="archivo">
+                        <small class="form-text text-muted">Selecciona un archivo PDF para adjuntar.</small>
                     </div>
                     
                     <div class="alert alert-danger" style="display:none;"></div>
@@ -70,6 +73,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- JavaScript -->
 <script>

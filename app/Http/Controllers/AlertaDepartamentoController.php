@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 class AlertaDepartamentoController extends Controller
 {
     public function index()
-    {
-        $alertasDepartamentos = AlertaDepartamento::all();
-        return view('alertas_departamento.index', compact('alertasDepartamentos'));
-    }
+{
+    // Carga las relaciones para evitar null
+    $alertasDepartamentos = AlertaDepartamento::with(['alerta', 'departamento'])->get();
+
+    return view('alertas_departamento.index', compact('alertasDepartamentos'));
+}
+
 }

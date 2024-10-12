@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UsuarioRequest;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
-
+use App\Models\Login;
+use App\Models\AlertaUsuario;
+use App\Models\UsuarioDepartamento;
 class UsuarioController extends Controller
 {
     // Método para mostrar la lista de usuarios con búsqueda
@@ -41,15 +43,27 @@ class UsuarioController extends Controller
         return response()->json(['data' => $usuario]);
     }
 
-    // Método para eliminar un usuario
     public function destroy($id)
     {
-
-            $usuario = Usuario::findOrFail($id);
-            
-            // Ahora eliminar el usuario
-            $usuario->delete();
+        // Encuentra el usuario
+        $usuario = Usuario::findOrFail($id);
+    
+        // Elimina los registros relacionados de las tablas conectadas
+        // Eliminar registros en la tabla login
+        Login::where('usuario_id', $id)->delete();
+    
+        // Eliminar registros en la tabla alertas_usuario
+        AlertaUsuario::where('usuario_id', $id)->delete();
+    
+        // Eliminar registros en la tabla usuario_departamento
+        UsuarioDepartamento::where('usuario_id', $id)->delete();
+    
+        // Ahora elimina el usuario
+        $usuario->delete();
+    
+        return response()->json(['success' => 'Usuario y datos relacionados eliminados correctamente.']);
     }
+    
 
     
 }

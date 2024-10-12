@@ -94,27 +94,27 @@
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li><a href="alertas"><i class="fa fa-circle-o"></i> Alertas</a></li>
-                <li><a href="alertas_departamento"><i class="fa fa-circle-o"></i> Alerta-Departamento</a></li>
-                <li><a href="alertas_usuario"><i class="fa fa-circle-o"></i> Alerta-Usuario</a></li>
-                <li><a href="departamentos"><i class="fa fa-circle-o"></i> Departamento</a></li>
-                <li><a href="logins"><i class="fa fa-circle-o"></i> Login</a></li>
-                <li><a href="usuarios"><i class="fa fa-circle-o"></i> Usuario</a></li>
-                <li><a href="usuarios_departamento"><i class="fa fa-circle-o"></i> Usuario-Departamento</a></li>
+                <li><a href="alertas"><img src="https://img.icons8.com/?size=100&id=13632&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i>Alertas</a></li>
+                <li><a href="alertas_departamento"><img src="https://img.icons8.com/?size=100&id=13632&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i>Alerta-Departamento</a></li>
+                <li><a href="alertas_usuario"><img src="https://img.icons8.com/?size=100&id=13632&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i>Alerta-Usuario</a></li>
+                <li><a href="departamentos"><img src="https://img.icons8.com/?size=100&id=20497&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i>Departamento</a></li>
+                <li><a href="logins"><img src="https://img.icons8.com/?size=100&id=16204&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i>Login</a></li>
+                <li><a href="usuarios"><img src="https://img.icons8.com/?size=100&id=23244&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i>Usuario</a></li>
+                <li><a href="usuarios_departamento"><img src="https://img.icons8.com/?size=100&id=23244&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i>Usuario-Departamento</a></li>
               </ul>
             </li>
-            <!--
             <li class="treeview">
               <a href="#">
                 <i class="fa fa-th"></i>
-                <span>Compras</span>
+                <span>API</span>
                  <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li><a href="compras/ingreso"><i class="fa fa-circle-o"></i> Ingresos</a></li>
-                <li><a href="compras/proveedor"><i class="fa fa-circle-o"></i> Proveedores</a></li>
+                <li><a href="{{ route('api.config') }}"><img src="https://img.icons8.com/?size=100&id=16713&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/></i>MENSAJE CONFIGURAR</a></li>
+                <li><a href="{{ route('file.send.config') }}"><img src="https://img.icons8.com/?size=100&id=13593&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/></i>PDF CONFIGURAR</a></li>
               </ul>
             </li>
+            <!--
             <li class="treeview">
               <a href="#">
                 <i class="fa fa-shopping-cart"></i>
@@ -122,8 +122,8 @@
                  <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li><a href="ventas/venta"><i class="fa fa-circle-o"></i> Ventas</a></li>
-                <li><a href="ventas/cliente"><i class="fa fa-circle-o"></i> Clientes</a></li>
+                <li><a href="ventas/venta"><img src="https://img.icons8.com/?size=100&id=16713&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i> Ventas</a></li>
+                <li><a href="ventas/cliente"><img src="https://img.icons8.com/?size=100&id=16713&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i> Clientes</a></li>
               </ul>
             </li>
                        
@@ -133,7 +133,7 @@
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li><a href="configuracion/usuario"><i class="fa fa-circle-o"></i> Usuarios</a></li>
+                <li><a href="configuracion/usuario"><img src="https://img.icons8.com/?size=100&id=16713&format=png&color=000000"style="width: 20px; height: 20px; vertical-align: middle;"/> </i> Usuarios</a></li>
                 
               </ul>
             </li>
@@ -170,11 +170,9 @@
             <div class="col-md-12">
               <div class="box">
                 <div class="box-header with-border">
-                  <h3 class="box-title">Sistema de Ventas</h3>
+                  <h3 class="box-title"></h3>
                   <div class="box-tools pull-right">
                     <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    
-                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                   </div>
                 </div>
                 <!-- /.box-header -->

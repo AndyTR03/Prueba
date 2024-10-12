@@ -1,6 +1,10 @@
 @extends ('layouts.admin')
 
 @section ('contenido')
+<?php
+echo date_default_timezone_get();
+?>
+
     <h1>Listado de Alertas</h1>
     
     <form action="{{ route('alertas.index') }}" method="GET">
@@ -49,6 +53,8 @@
     @include('alertas.create') <!-- Modal para crear alertas -->
     @include('alertas.delete') <!-- Modal para eliminar alertas -->
     @include('alertas.edit') <!-- Modal para editar alertas -->
-
+    <div>
+    {{ $alertas->links('vendor.pagination.bootstrap-5') }}
+    </div>
     <script src="{{ asset('js/alertas.js') }}"></script>
 @stop

@@ -16,6 +16,16 @@ $(document).ready(function() {
     $('.create-user-form').on('submit', function(e) {
         e.preventDefault(); // Evita la recarga de la página
 
+        // Obtener el código de país y el número de teléfono
+        const codigoPais = $('#codigo_pais').val(); // Obtener el valor del select
+        const telefono = $('#telefono').val(); // Obtener el número de teléfono
+
+        // Concatenar el código de país y el número de teléfono
+        const numeroCompleto = codigoPais + telefono;
+
+        // Establecer el campo 'telefono' con el número completo
+        $(this).find('input[name="telefono"]').val(numeroCompleto);
+
         let formData = $(this).serialize(); // Obtén los datos del formulario
         let form = $(this);
         let actionUrl = form.attr('action'); // La URL para crear usuario
@@ -37,6 +47,7 @@ $(document).ready(function() {
                 
                 // Limpia el formulario después de un envío exitoso
                 form[0].reset(); // Limpia el formulario
+                $('.alert-danger').hide(); // Limpia mensajes de error
             },
             error: function(xhr) {
                 // Comprueba si la respuesta contiene errores

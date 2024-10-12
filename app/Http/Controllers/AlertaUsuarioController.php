@@ -9,7 +9,10 @@ class AlertaUsuarioController extends Controller
 {
     public function index()
     {
-        $alertasUsuarios = AlertaUsuario::all();
+        // Cargar las relaciones para evitar N+1
+        $alertasUsuarios = AlertaUsuario::with(['alerta', 'usuario'])->get();
+        
+        // Pasar datos a la vista
         return view('alertas_usuario.index', compact('alertasUsuarios'));
     }
 }

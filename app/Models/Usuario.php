@@ -39,4 +39,5 @@ class Usuario extends Model
     {
         return $this->hasMany(AlertaUsuario::class, 'usuario_id');
     }
+
 }

@@ -22,5 +22,8 @@ class Alerta extends Model
     {
         return $this->belongsToMany(Departamento::class, 'alerta_departamentos');
     }
-
+    public function alertasDepartamentos()
+    {
+        return $this->hasMany(AlertaDepartamento::class, 'alerta_id');
+    }
 }
