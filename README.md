@@ -3,14 +3,10 @@
 <img src="https://img.shields.io/badge/CSS3-black?style=for-the-badge&logo=CSS3&logoColor=1572B6"/>
 <img src="https://img.shields.io/badge/JAVASCRIPT-black?style=for-the-badge&logo=JavaScript&logoColor=F7DF1E"/>
 <img src="https://img.shields.io/badge/HTML-black?style=for-the-badge&logo=HTML5&logoColor=E34F26"/>
-<img src="https://img.shields.io/badge/DOCKER-black?style=for-the-badge&logo=Docker&logoColor=2496ED"/>
-<img src="https://img.shields.io/badge/PYTHON-black?style=for-the-badge&logo=python&logoColor=gold"/>
-<img src="https://img.shields.io/badge/SH SCRIPTS-black?style=for-the-badge&logo=GNU Bash&logoColor=white"/>
-<img src="https://img.shields.io/badge/TYPESCRIPT-black?style=for-the-badge&logo=TypeScript&logoColor=3178C6"/>
 
 # Notificaciones Rápidas
 
-Notificaciones Rápidas es una aplicación desarrollada en Laravel que permite enviar notificaciones y archivos a múltiples destinatarios a través de WhatsApp. La aplicación es capaz de enviar archivos PDF e imágenes en formato base64, sin un límite de destinatarios, y ofrece la funcionalidad de programar alertas para su envío futuro. Esta aplicación utiliza la API proporcionada por Buho, facilitando la realización de pruebas.
+Notificaciones Rápidas es una aplicación desarrollada en Laravel 11 que permite enviar notificaciones y archivos a múltiples destinatarios a través de WhatsApp. La aplicación es capaz de enviar archivos PDF e imágenes en formato base64, sin un límite de destinatarios, y ofrece la funcionalidad de programar alertas para su envío futuro. Esta aplicación utiliza la API proporcionada por Buho, facilitando la realización de pruebas.
 
 ## Tabla de Contenidos
 - [Requisitos Previos](#requisitos-previos)
@@ -37,25 +33,31 @@ Antes de ejecutar el proyecto, asegúrate de tener instalados los siguientes com
 
 ## Instalación
 
+Sigue estos pasos para instalar y configurar la aplicación en tu entorno local:
+
 1. **Clonar el repositorio**:
 
     ```bash
     git clone https://github.com/AndyTR03/Prueba
-    cd notificaciones-rapidas
+    cd Prueba
     ```
 
 2. **Instalar las dependencias de PHP**:
+
+    Asegúrate de estar en la carpeta del proyecto y ejecuta:
 
     ```bash
     composer install
     ```
 
-3. **Configurar el archivo .env**:
+3. **Configurar el archivo `.env`**:
 
-    Copia el archivo `.env.example` y renómbralo a `.env`.
-    Configura los detalles de conexión a la base de datos y la clave de API de Buho.
+    - Copia el archivo de ejemplo `.env.example` y renómbralo a `.env`.
+    - Abre el archivo `.env` y configura los detalles de conexión a la base de datos y la clave de API de Buho.
 
 4. **Generar la clave de aplicación**:
+
+    Ejecuta el siguiente comando para generar la clave de aplicación única de Laravel:
 
     ```bash
     php artisan key:generate
@@ -63,15 +65,21 @@ Antes de ejecutar el proyecto, asegúrate de tener instalados los siguientes com
 
 5. **Migrar la base de datos**:
 
+    Asegúrate de tener configurada tu base de datos en el archivo `.env`, luego ejecuta:
+
     ```bash
     php artisan migrate
     ```
 
 6. **Iniciar el servidor de desarrollo**:
 
+    Por último, inicia el servidor de desarrollo de Laravel:
+
     ```bash
     php artisan serve
     ```
+
+   La aplicación estará disponible en `http://localhost:8000`.
 
 ## Características Principales
 
@@ -90,7 +98,3 @@ Si deseas contribuir a este proyecto, por favor sigue estos pasos:
 3. Haz commit de tus cambios (`git commit -m 'Agregar nueva característica'`).
 4. Haz push a la rama (`git push origin feature/nueva-caracteristica`).
 5. Abre un Pull Request.
-
-## Licencia
-
-Este proyecto está licenciado bajo la Licencia MIT - mira el archivo `LICENSE` para más detalles.
