@@ -42,7 +42,25 @@ Sigue estos pasos para instalar y configurar la aplicación en tu entorno local:
     cd Prueba
     ```
 
-2. **Instalar las dependencias de PHP**:
+2. **Instalar Laravel**:
+
+    Si aún no tienes Laravel instalado, sigue estos pasos para instalarlo:
+
+    - **Instalar Composer**: Asegúrate de tener [Composer](https://getcomposer.org/) instalado en tu máquina. Puedes verificar su instalación ejecutando:
+
+      ```bash
+      composer --version
+      ```
+
+    - **Instalar Laravel**: Una vez que Composer esté instalado, puedes instalar Laravel globalmente ejecutando:
+
+      ```bash
+      composer global require laravel/installer
+      ```
+
+      Asegúrate de que el directorio de Composer `vendor/bin` esté en tu `PATH`. Esto te permitirá ejecutar el comando `laravel` desde cualquier lugar.
+
+3. **Instalar las dependencias de PHP**:
 
     Asegúrate de estar en la carpeta del proyecto y ejecuta:
 
@@ -50,18 +68,10 @@ Sigue estos pasos para instalar y configurar la aplicación en tu entorno local:
     composer install
     ```
 
-3. **Configurar el archivo `.env`**:
+4. **Configurar el archivo `.env`**:
 
     - Copia el archivo de ejemplo `.env.example` y renómbralo a `.env`.
     - Abre el archivo `.env` y configura los detalles de conexión a la base de datos y la clave de API de Buho.
-
-4. **Generar la clave de aplicación**:
-
-    Ejecuta el siguiente comando para generar la clave de aplicación única de Laravel:
-
-    ```bash
-    php artisan key:generate
-    ```
 
 5. **Migrar la base de datos**:
 
